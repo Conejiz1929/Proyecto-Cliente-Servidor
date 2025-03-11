@@ -1,2 +1,63 @@
-# Proyecto-Cliente-Servidor
-Proyecto
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.iniciodesesion;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author José Sequeira
+ */
+public class Registro extends JFrame {
+    private ArrayList<Registro> usuarios = new ArrayList<>();
+    public Registro() {
+        setTitle("Inicio de Sesión");
+        setSize(800, 200);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 40));
+        
+        JPanel registro = new JPanel(new GridLayout(3,3,4,5));
+        
+        
+        JLabel  newUsuario = new JLabel("Digite su nuevo USUARIO");
+        registro.add(newUsuario);
+        JTextField User = new JTextField();
+        registro.add(User);
+        JLabel newContrasenia = new JLabel("Digite su nueva CONTRASEÑA");
+        registro.add(newContrasenia);
+        JPasswordField password = new JPasswordField();
+        registro.add(password);
+        
+        JButton regresar = new JButton("REGRESAR");
+        registro.add(regresar);
+        JButton guardar = new JButton("GUARDAR");
+        registro.add(guardar);
+        
+        add(registro,BorderLayout.CENTER);
+        
+        regresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false); // Ocultar ventana de registro
+                InicioDeSesion inicioDeSesion = new InicioDeSesion();
+                inicioDeSesion.setVisible(true); // Mostrar ventana de inicio de sesión
+            }
+        });
+        
+    }   
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Registro registro = new Registro();
+            registro.setVisible(true);
+        });
+    }
+}
