@@ -13,8 +13,8 @@ public class ProductoElectronico extends Producto {
     private String marca;
     private String modelo;
 
-    public ProductoElectronico(String marca, String modelo, String nombre, String descripcion, double precio, int cantidad, String categoria) {
-        super(nombre, descripcion, precio, cantidad, categoria);
+    public ProductoElectronico(String marca, String modelo, String codigo, String nombre, int cantidad, double precio, String categoria) {
+        super(codigo, nombre, cantidad, precio, categoria);
         this.marca = marca;
         this.modelo = modelo;
     }

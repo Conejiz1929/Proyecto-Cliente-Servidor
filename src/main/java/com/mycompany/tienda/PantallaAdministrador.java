@@ -15,7 +15,11 @@ import java.awt.event.ActionListener;
 
 public class PantallaAdministrador extends JFrame {
 
-    public PantallaAdministrador(GestorUsuarios gestorUsuarios) {
+    private Controlnventario controlInventario;
+
+    public PantallaAdministrador(GestorUsuarios gestorUsuarios, Controlnventario controlInventario) {
+        this.controlInventario = controlInventario;
+
         setTitle("Administrador - Reportes e Inventarios");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -33,8 +37,10 @@ public class PantallaAdministrador extends JFrame {
         });
 
         controlarInventarioButton.addActionListener(e -> {
-            // Lógica para controlar inventario
-            JOptionPane.showMessageDialog(this, "Control de inventario.");
+            // Abrir la ventana EditarProductos para gestionar el inventario
+            Controlnventario control = new  Controlnventario();
+            EditarProductos editar = new EditarProductos(control);
+            editar.setVisible(true);
         });
 
         panel.add(generarReporteButton);

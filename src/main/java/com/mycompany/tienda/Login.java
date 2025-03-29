@@ -20,6 +20,7 @@ public class Login extends JFrame {
     private JButton loginButton;
     private JButton registerButton;
     private GestorUsuarios gestorUsuarios;
+    private Controlnventario controlnventario;
 
     public Login(GestorUsuarios gestorUsuarios) {
         this.gestorUsuarios = gestorUsuarios;
@@ -42,7 +43,7 @@ public class Login extends JFrame {
                     JOptionPane.showMessageDialog(null, "Inicio de sesion exitoso!");
 
                     if (usuarioAutenticado instanceof Administrador) {
-                        new PantallaAdministrador(gestorUsuarios).setVisible(true);
+                        new PantallaAdministrador(gestorUsuarios,controlnventario).setVisible(true);
                     } else {
                         new PantallaPrincipal(usuarioAutenticado, gestorUsuarios).setVisible(true);
                     }

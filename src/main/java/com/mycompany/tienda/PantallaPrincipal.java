@@ -17,6 +17,7 @@ class PantallaPrincipal extends JFrame {
 
     public PantallaPrincipal(Usuario usuarioAutenticado, GestorUsuarios gestorUsuarios) {
         // Inicializar componentes
+        Controlnventario controlnventario = new Controlnventario();
         Inventario inventario = new Inventario();
         Carrito carrito = new Carrito();
 
@@ -37,7 +38,7 @@ class PantallaPrincipal extends JFrame {
 
         // Listeners de botones
         verProductosButton.addActionListener(e -> {
-            VerProductos verProductos = new VerProductos(inventario, carrito);
+            VerProductos verProductos = new VerProductos(controlnventario, carrito);
             verProductos.setVisible(true);
         });
 
