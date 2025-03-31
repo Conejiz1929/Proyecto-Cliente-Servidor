@@ -1,8 +1,10 @@
 package com.mycompany.tienda;
 
-
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -31,6 +33,11 @@ public class EditarProductos extends JFrame {
         JButton btnEliminar = new JButton("Eliminar Producto");
         btnEliminar.addActionListener(e -> eliminarProducto());
         add(btnEliminar);
+
+        // Añadir el botón "Guardar Cambios"
+        JButton btnGuardarCambios = new JButton("Guardar Cambios");
+        btnGuardarCambios.addActionListener(e -> guardarCambios());
+        add(btnGuardarCambios);
 
         actualizarListaProductos();
         setVisible(true);
@@ -90,6 +97,15 @@ public class EditarProductos extends JFrame {
         }
     }
 
+    // Método para guardar los cambios realizados
+    private void guardarCambios() {
+        List<Producto> productos = controlInventario.obtenerProductos();
+        for (Producto producto : productos) {
+            controlInventario.actualizarProducto(producto);
+        }
+        JOptionPane.showMessageDialog(this, "Cambios guardados exitosamente.");
+    }
+
     private static class ControlInventario {
 
         private List<Producto> productos;
@@ -117,6 +133,24 @@ public class EditarProductos extends JFrame {
             }
             return lista;
         }
+
+        public List<Producto> obtenerProductos() {
+            return productos;
+        }
+
+        public void actualizarProducto(Producto producto) {
+            String sql = "UPDATE Productos SET nombre = ?, precio = ?, stock = ?, id_categoria = ? WHERE id_producto = ?";
+            try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, producto.getNombre());
+                stmt.setDouble(2, producto.getPrecio());
+                stmt.setInt(3, producto.getCantidad());
+                stmt.setInt(4, producto.getIdCategoria());
+                stmt.setString(5, producto.getCodigo());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static class Producto {
@@ -137,6 +171,22 @@ public class EditarProductos extends JFrame {
 
         public String getCodigo() {
             return codigo;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+
+        public int getCantidad() {
+            return cantidad;
+        }
+
+        public double getPrecio() {
+            return precio;
+        }
+
+        public int getIdCategoria() {
+            return idCategoria;
         }
 
         @Override

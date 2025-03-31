@@ -67,7 +67,7 @@ public class ControlInventario {
     // Obtiene la lista de productos de la base de datos
     public List<Producto> obtenerProductos() {
         List<Producto> productos = new ArrayList<>();
-        String sql = "SELECT id_producto, nombre, precio, stock, id_categoria FROM Productos";
+        String sql = "SELECT id_producto, nombre, precio, stock, categoria FROM Productos"; // Cambiado id_categoria a categoria
         try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 String codigo = rs.getString("id_producto");
