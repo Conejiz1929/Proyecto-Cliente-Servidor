@@ -31,14 +31,14 @@ public class ControlInventario {
     }
 
     // Registra un nuevo producto en la base de datos
-    public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
+    public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int categoria) {
         String sql = "INSERT INTO Productos (id_producto, nombre, precio, stock, id_categoria) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, codigo);
             stmt.setString(2, nombre);
             stmt.setDouble(3, precio);
             stmt.setInt(4, cantidad);
-            stmt.setInt(5, idCategoria);
+            stmt.setInt(5, categoria);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Producto agregado exitosamente.");
         } catch (SQLException e) {

@@ -1,7 +1,6 @@
 package com.mycompany.tienda;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -65,14 +64,14 @@ public class EditarProductos extends JFrame {
         try {
             int cantidad = Integer.parseInt(cantidadStr);
             double precio = Double.parseDouble(precioStr);
-            int idCategoria = Integer.parseInt(categoriaStr);
+            String categoria = categoriaStr;
 
             if (controlInventario.existeProducto(codigo)) {
                 JOptionPane.showMessageDialog(this, "El código del producto ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            controlInventario.registrarProducto(codigo, nombre, cantidad, precio, idCategoria);
+            controlInventario.registrarProducto(codigo, nombre, cantidad, precio, categoria);
             actualizarListaProductos();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Cantidad, precio o categoría inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -118,8 +117,8 @@ public class EditarProductos extends JFrame {
             return productos.stream().anyMatch(p -> p.getCodigo().equals(codigo));
         }
 
-        public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
-            productos.add(new Producto(codigo, nombre, cantidad, precio, idCategoria));
+        public void registrarProducto(String codigo, String nombre, int cantidad, double precio, String categoria) {
+            productos.add(new Producto(codigo, nombre, cantidad, precio, categoria));
         }
 
         public void eliminarProducto(String codigo) {
@@ -144,7 +143,7 @@ public class EditarProductos extends JFrame {
                 stmt.setString(1, producto.getNombre());
                 stmt.setDouble(2, producto.getPrecio());
                 stmt.setInt(3, producto.getCantidad());
-                stmt.setInt(4, producto.getIdCategoria());
+                stmt.setString(4, producto.getCategoria());
                 stmt.setString(5, producto.getCodigo());
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -159,39 +158,59 @@ public class EditarProductos extends JFrame {
         private String nombre;
         private int cantidad;
         private double precio;
-        private int idCategoria;
+        private String categoria;
 
-        public Producto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
+        public Producto(String codigo, String nombre, int cantidad, double precio, String categoria) {
             this.codigo = codigo;
             this.nombre = nombre;
             this.cantidad = cantidad;
             this.precio = precio;
-            this.idCategoria = idCategoria;
+            this.categoria = categoria;
         }
 
         public String getCodigo() {
             return codigo;
         }
 
+        public void setCodigo(String codigo) {
+            this.codigo = codigo;
+        }
+
         public String getNombre() {
             return nombre;
+        }
+
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
         }
 
         public int getCantidad() {
             return cantidad;
         }
 
+        public void setCantidad(int cantidad) {
+            this.cantidad = cantidad;
+        }
+
         public double getPrecio() {
             return precio;
         }
 
-        public int getIdCategoria() {
-            return idCategoria;
+        public void setPrecio(double precio) {
+            this.precio = precio;
+        }
+
+        public String getCategoria() {
+            return categoria;
+        }
+
+        public void setCategoria(String categoria) {
+            this.categoria = categoria;
         }
 
         @Override
         public String toString() {
-            return "Código: " + codigo + ", Nombre: " + nombre + ", Cantidad: " + cantidad + ", Precio: " + precio + ", ID Categoría: " + idCategoria;
+            return "Código: " + codigo + ", Nombre: " + nombre + ", Cantidad: " + cantidad + ", Precio: " + precio + ", ID Categoría: " + categoria;
         }
     }
 }
