@@ -9,9 +9,11 @@ package com.mycompany.tienda;
  * @author José Sequeira
  */
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 
-public class Controlnventario {
+public class ControlInventario {
 
     // Verifica si un producto ya existe en la base de datos
     public boolean existeProducto(String codigo) {
@@ -30,12 +32,13 @@ public class Controlnventario {
 
     // Registra un nuevo producto en la base de datos
     public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
-        String sql = "INSERT INTO Productos (nombre, descripcion, precio, stock, id_categoria) VALUES (?, '', ?, ?, ?)";
+        String sql = "INSERT INTO Productos (id_producto, nombre, precio, stock, id_categoria) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nombre);
-            stmt.setDouble(2, precio);
-            stmt.setInt(3, cantidad);
-            stmt.setInt(4, idCategoria);
+            stmt.setString(1, codigo);
+            stmt.setString(2, nombre);
+            stmt.setDouble(3, precio);
+            stmt.setInt(4, cantidad);
+            stmt.setInt(5, idCategoria);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Producto agregado exitosamente.");
         } catch (SQLException e) {
@@ -59,5 +62,24 @@ public class Controlnventario {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al eliminar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // Obtiene la lista de productos de la base de datos
+    public List<Producto> obtenerProductos() {
+        List<Producto> productos = new ArrayList<>();
+        String sql = "SELECT id_producto, nombre, precio, stock, id_categoria FROM Productos";
+        try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String codigo = rs.getString("id_producto");
+                String nombre = rs.getString("nombre");
+                double precio = rs.getDouble("precio");
+                int cantidad = rs.getInt("stock");
+                String categoria = rs.getString("categoria");
+                productos.add(new Producto(codigo, nombre, cantidad, precio, categoria));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productos;
     }
 }

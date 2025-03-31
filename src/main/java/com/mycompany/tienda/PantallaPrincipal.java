@@ -17,7 +17,7 @@ class PantallaPrincipal extends JFrame {
 
     public PantallaPrincipal(Usuario usuarioAutenticado, GestorUsuarios gestorUsuarios) {
         // Inicializar componentes
-        Controlnventario controlnventario = new Controlnventario();
+        ControlInventario controlnventario = new ControlInventario();
         Inventario inventario = new Inventario();
         Carrito carrito = new Carrito();
 

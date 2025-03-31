@@ -1,11 +1,14 @@
+package com.mycompany.tienda;
+
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.List;
+import java.util.ArrayList;
 
 public class EditarProductos extends JFrame {
 
-    private Controlnventario controlInventario;
+    private ControlInventario controlInventario;
     private JList<String> listaProductos;
     private DefaultListModel<String> modeloLista;
 
@@ -89,8 +92,56 @@ public class EditarProductos extends JFrame {
 
     private static class ControlInventario {
 
-        public ControlInventario() {
+        private List<Producto> productos;
 
+        public ControlInventario() {
+            productos = new ArrayList<>();
+        }
+
+        public boolean existeProducto(String codigo) {
+            return productos.stream().anyMatch(p -> p.getCodigo().equals(codigo));
+        }
+
+        public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
+            productos.add(new Producto(codigo, nombre, cantidad, precio, idCategoria));
+        }
+
+        public void eliminarProducto(String codigo) {
+            productos.removeIf(p -> p.getCodigo().equals(codigo));
+        }
+
+        public List<String> obtenerListaProductos() {
+            List<String> lista = new ArrayList<>();
+            for (Producto producto : productos) {
+                lista.add(producto.toString());
+            }
+            return lista;
+        }
+    }
+
+    private static class Producto {
+
+        private String codigo;
+        private String nombre;
+        private int cantidad;
+        private double precio;
+        private int idCategoria;
+
+        public Producto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
+            this.codigo = codigo;
+            this.nombre = nombre;
+            this.cantidad = cantidad;
+            this.precio = precio;
+            this.idCategoria = idCategoria;
+        }
+
+        public String getCodigo() {
+            return codigo;
+        }
+
+        @Override
+        public String toString() {
+            return "Código: " + codigo + ", Nombre: " + nombre + ", Cantidad: " + cantidad + ", Precio: " + precio + ", ID Categoría: " + idCategoria;
         }
     }
 }

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class VerProductos extends JFrame {
 
-    private Controlnventario controlInventario;
+    private ControlInventario controlInventario;
     private Carrito carrito;
     private JPanel panelProductos;
     private JTextField filtroCategoriaField;
@@ -24,7 +24,7 @@ public class VerProductos extends JFrame {
     private JTextField filtroPrecioMaxField;
     private JCheckBox filtroDisponibilidadCheckBox;
 
-    public VerProductos(Controlnventario controlInventario, Carrito carrito) {
+    public VerProductos(ControlInventario controlInventario, Carrito carrito) {
         this.controlInventario = controlInventario;
         this.carrito = carrito;
 

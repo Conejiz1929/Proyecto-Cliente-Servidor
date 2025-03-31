@@ -13,9 +13,9 @@ import java.awt.*;
 
 public class PantallaAdministrador extends JFrame {
 
-    private Controlnventario controlInventario;
+    private ControlInventario controlInventario;
 
-    public PantallaAdministrador(GestorUsuarios gestorUsuarios, Controlnventario controlInventario) {
+    public PantallaAdministrador(GestorUsuarios gestorUsuarios, ControlInventario controlInventario) {
         this.controlInventario = controlInventario;
 
         setTitle("Administrador - Reportes e Inventarios");
@@ -36,7 +36,7 @@ public class PantallaAdministrador extends JFrame {
 
         controlarInventarioButton.addActionListener(e -> {
             VerProductos verProductos = new VerProductos(controlInventario, new Carrito());
-            EditarProductos editarProductos = new EditarProductos(controlInventario, verProductos);
+            EditarProductos editarProductos = new EditarProductos();
             editarProductos.setVisible(true);
         });
 
