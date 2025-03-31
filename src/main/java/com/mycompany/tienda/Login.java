@@ -40,10 +40,12 @@ public class Login extends JFrame {
                 if (gestorUsuarios.autenticarUsuario(email, password)) {
                     Usuario usuarioAutenticado = gestorUsuarios.obtenerUsuario(email);
 
-                    JOptionPane.showMessageDialog(null, "Inicio de sesion exitoso!");
+                    JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso!");
+
+                    Controlnventario controlInventario = new Controlnventario(); // Inicializar aquí
 
                     if (usuarioAutenticado instanceof Administrador) {
-                        new PantallaAdministrador(gestorUsuarios,controlnventario).setVisible(true);
+                        new PantallaAdministrador(gestorUsuarios, controlInventario).setVisible(true);
                     } else {
                         new PantallaPrincipal(usuarioAutenticado, gestorUsuarios).setVisible(true);
                     }

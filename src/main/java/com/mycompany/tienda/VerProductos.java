@@ -6,8 +6,7 @@ package com.mycompany.tienda;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,78 +16,73 @@ import java.util.stream.Collectors;
  */
 public class VerProductos extends JFrame {
 
-    private Controlnventario controlnventario;
+    private Controlnventario controlInventario;
     private Carrito carrito;
     private JPanel panelProductos;
+    private JTextField filtroCategoriaField;
+    private JTextField filtroPrecioMinField;
+    private JTextField filtroPrecioMaxField;
+    private JCheckBox filtroDisponibilidadCheckBox;
 
-    public VerProductos(Controlnventario controlnventario, Carrito carrito) {
-        this.controlnventario = controlnventario;
+    public VerProductos(Controlnventario controlInventario, Carrito carrito) {
+        this.controlInventario = controlInventario;
         this.carrito = carrito;
-        setTitle("Productos Disponibles");
+
+        setTitle("Ver Productos");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // Crear un panel para mostrar los productos
         panelProductos = new JPanel(new GridLayout(0, 1));
         JScrollPane scrollPane = new JScrollPane(panelProductos);
 
-        // Panel de filtros
-        JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JTextField precioMinField = new JTextField(5);
-        JTextField precioMaxField = new JTextField(5);
-        JCheckBox disponibilidadCheckBox = new JCheckBox("Solo disponibles");
-        JButton aplicarFiltrosButton = new JButton("Aplicar Filtros");
+        // Crear un panel para los filtros
+        JPanel panelFiltros = new JPanel(new GridLayout(2, 4, 10, 10));
+        panelFiltros.setBorder(BorderFactory.createTitledBorder("Filtros"));
 
-        panelFiltros.add(new JLabel("Precio Mín:"));
-        panelFiltros.add(precioMinField);
-        panelFiltros.add(new JLabel("Precio Máx:"));
-        panelFiltros.add(precioMaxField);
-        panelFiltros.add(disponibilidadCheckBox);
+        // Filtro por categoría
+        panelFiltros.add(new JLabel("Categoría:"));
+        filtroCategoriaField = new JTextField();
+        panelFiltros.add(filtroCategoriaField);
+
+        // Filtro por precio mínimo
+        panelFiltros.add(new JLabel("Precio Mínimo:"));
+        filtroPrecioMinField = new JTextField();
+        panelFiltros.add(filtroPrecioMinField);
+
+        // Filtro por precio máximo
+        panelFiltros.add(new JLabel("Precio Máximo:"));
+        filtroPrecioMaxField = new JTextField();
+        panelFiltros.add(filtroPrecioMaxField);
+
+        // Filtro por disponibilidad
+        panelFiltros.add(new JLabel("Solo disponibles:"));
+        filtroDisponibilidadCheckBox = new JCheckBox();
+        panelFiltros.add(filtroDisponibilidadCheckBox);
+
+        // Botón para aplicar filtros
+        JButton aplicarFiltrosButton = new JButton("Aplicar Filtros");
+        aplicarFiltrosButton.addActionListener(e -> aplicarFiltros());
         panelFiltros.add(aplicarFiltrosButton);
 
-        aplicarFiltrosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String precioMinStr = precioMinField.getText();
-                String precioMaxStr = precioMaxField.getText();
-                boolean soloDisponibles = disponibilidadCheckBox.isSelected();
-
-                double precioMin = precioMinStr.isEmpty() ? 0 : Double.parseDouble(precioMinStr);
-                double precioMax = precioMaxStr.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(precioMaxStr);
-
-                List<Producto> productosFiltrados = controlnventario.obtenerProductos().stream().filter(p -> p.getPrecio() >= precioMin && p.getPrecio() <= precioMax)
-                        .collect(Collectors.toList());
-
-                if (soloDisponibles) {
-                    productosFiltrados = productosFiltrados.stream()
-                            .filter(p -> p.getCantidad() > 0)
-                            .collect(Collectors.toList());
-                }
-
-                actualizarListaProductos(productosFiltrados);
-            }
-        });
-
-        // Botón para regresar
+        // Botón para regresar a la pantalla principal
         JButton regresarButton = new JButton("Regresar");
-        regresarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();  // Cierra la ventana actual
-            }
+        regresarButton.addActionListener(e -> {
+            dispose(); // Cierra la ventana actual
+
         });
+        panelFiltros.add(regresarButton);
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panelBotones.add(regresarButton);
-
+        // Añadir los componentes al JFrame
         add(panelFiltros, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
 
-        actualizarListaProductos(controlnventario.obtenerProductos());
+        // Mostrar los productos al abrir la ventana
+        actualizarListaProductos(controlInventario.obtenerProductos());
     }
 
-    private void actualizarListaProductos(List<Producto> productos) {
+    public void actualizarListaProductos(List<Producto> productos) {
         panelProductos.removeAll();
         for (Producto producto : productos) {
             JPanel productoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -109,5 +103,23 @@ public class VerProductos extends JFrame {
         }
         panelProductos.revalidate();
         panelProductos.repaint();
+    }
+
+    private void aplicarFiltros() {
+        String categoria = filtroCategoriaField.getText().trim();
+        String precioMinStr = filtroPrecioMinField.getText().trim();
+        String precioMaxStr = filtroPrecioMaxField.getText().trim();
+        boolean soloDisponibles = filtroDisponibilidadCheckBox.isSelected();
+
+        double precioMin = precioMinStr.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(precioMinStr);
+        double precioMax = precioMaxStr.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(precioMaxStr);
+
+        List<Producto> productosFiltrados = controlInventario.obtenerProductos().stream()
+                .filter(producto -> categoria.isEmpty() || producto.getCategoria().equalsIgnoreCase(categoria))
+                .filter(producto -> producto.getPrecio() >= precioMin && producto.getPrecio() <= precioMax)
+                .filter(producto -> !soloDisponibles || producto.getCantidad() > 0)
+                .collect(Collectors.toList());
+
+        actualizarListaProductos(productosFiltrados);
     }
 }

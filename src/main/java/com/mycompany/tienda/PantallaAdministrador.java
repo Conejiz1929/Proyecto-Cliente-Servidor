@@ -10,8 +10,6 @@ package com.mycompany.tienda;
  */
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class PantallaAdministrador extends JFrame {
 
@@ -37,10 +35,9 @@ public class PantallaAdministrador extends JFrame {
         });
 
         controlarInventarioButton.addActionListener(e -> {
-            // Abrir la ventana EditarProductos para gestionar el inventario
-            Controlnventario control = new  Controlnventario();
-            EditarProductos editar = new EditarProductos(control);
-            editar.setVisible(true);
+            VerProductos verProductos = new VerProductos(controlInventario, new Carrito());
+            EditarProductos editarProductos = new EditarProductos(controlInventario, verProductos);
+            editarProductos.setVisible(true);
         });
 
         panel.add(generarReporteButton);
@@ -48,12 +45,9 @@ public class PantallaAdministrador extends JFrame {
 
         // Botón para regresar al login
         JButton regresarButton = new JButton("Regresar");
-        regresarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();  // Cierra la ventana actual
-                new Login(gestorUsuarios).setVisible(true);  // Muestra la ventana de login
-            }
+        regresarButton.addActionListener(e -> {
+            dispose();  // Cierra la ventana actual
+            new Login(gestorUsuarios).setVisible(true);  // Muestra la ventana de login
         });
         panel.add(regresarButton);
 

@@ -8,75 +8,56 @@ package com.mycompany.tienda;
  *
  * @author José Sequeira
  */
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import javax.swing.JOptionPane;
 
 public class Controlnventario {
 
-    private Map<String, Producto> inventario;
-    private static final int LIMITE_BAJO_STOCK = 5; // Límite para alertar bajo stock
-
-    public Controlnventario() {
-        this.inventario = new HashMap<>();
-    }
-
-    // Actualizar existencias tras una compra
-    public void actualizarExistencias(String codigo, int cantidadVendida) {
-        if (inventario.containsKey(codigo)) {
-            Producto producto = inventario.get(codigo);
-            if (producto.getCantidad() >= cantidadVendida) {
-                producto.setCantidad(producto.getCantidad() - cantidadVendida);
-                System.out.println("Existencias actualizadas.");
-                verificarBajoStock(producto);
-            } else {
-                System.out.println("Stock insuficiente para la venta.");
+    // Verifica si un producto ya existe en la base de datos
+    public boolean existeProducto(String codigo) {
+        String sql = "SELECT COUNT(*) FROM Productos WHERE id_producto = ?";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
-        } else {
-            System.out.println("Producto no encontrado en el inventario.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Registra un nuevo producto en la base de datos
+    public void registrarProducto(String codigo, String nombre, int cantidad, double precio, int idCategoria) {
+        String sql = "INSERT INTO Productos (nombre, descripcion, precio, stock, id_categoria) VALUES (?, '', ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nombre);
+            stmt.setDouble(2, precio);
+            stmt.setInt(3, cantidad);
+            stmt.setInt(4, idCategoria);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Producto agregado exitosamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al registrar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Verificar si un producto está próximo a agotarse
-    private void verificarBajoStock(Producto producto) {
-        if (producto.getCantidad() <= LIMITE_BAJO_STOCK) {
-            System.out.println("ALERTA: El producto " + producto.getNombre() + " está próximo a agotarse.");
-        }
-    }
-
-    // Mostrar el inventario completo
-    public void mostrarInventario() {
-        System.out.println("Inventario actual:");
-        for (Producto producto : inventario.values()) {
-            System.out.println(producto);
-        }
-    }
-
+    // Elimina un producto de la base de datos
     public void eliminarProducto(String codigo) {
-        inventario.remove(codigo);
-    }
-
-    // Obtener todos los productos del inventario
-    public List<Producto> obtenerProductos() {
-        return new ArrayList<>(inventario.values()); // Devuelve una lista con los productos
-    }
-
-    public Inventario convertirAInventario() {
-        Inventario inventarioObj = new Inventario();
-        for (Producto producto : inventario.values()) {
-            inventarioObj.agregarProducto(producto);
-        }
-        return inventarioObj;
-    }
-
-    public void registrarProducto(String codigo, String nombre, int cantidad, double precio, String categoria) {
-        if (inventario.containsKey(codigo)) {
-            System.out.println("El producto con el código " + codigo + " ya existe.");
-        } else {
-            Producto nuevoProducto = new Producto(codigo, nombre, cantidad, precio, categoria);
-            inventario.put(codigo, nuevoProducto);
-            System.out.println("Producto agregado exitosamente: " + nuevoProducto);
+        String sql = "DELETE FROM Productos WHERE id_producto = ?";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codigo);
+            int filasAfectadas = stmt.executeUpdate();
+            if (filasAfectadas > 0) {
+                JOptionPane.showMessageDialog(null, "Producto eliminado exitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró el producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al eliminar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -1,107 +1,96 @@
-package com.mycompany.tienda;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 
 public class EditarProductos extends JFrame {
 
     private Controlnventario controlInventario;
-    private JPanel panelProductos;
+    private JList<String> listaProductos;
+    private DefaultListModel<String> modeloLista;
 
-    public EditarProductos(Controlnventario controlInventario) {
-        this.controlInventario = controlInventario;
+    public EditarProductos() {
+        controlInventario = new ControlInventario();
+        setTitle("Editar Productos");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        setTitle("Editar Productos del Inventario");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        modeloLista = new DefaultListModel<>();
+        listaProductos = new JList<>(modeloLista);
+        JScrollPane scrollPane = new JScrollPane(listaProductos);
+        add(scrollPane);
 
-        // Crear un panel para mostrar los productos
-        panelProductos = new JPanel(new GridLayout(0, 1));
-        JScrollPane scrollPane = new JScrollPane(panelProductos);
+        JButton btnAgregar = new JButton("Agregar Producto");
+        btnAgregar.addActionListener(e -> agregarProducto());
+        add(btnAgregar);
 
-        // Botón para agregar productos
-        JButton agregarProductoButton = new JButton("Agregar Producto");
-        agregarProductoButton.addActionListener(e -> agregarProducto());
+        JButton btnEliminar = new JButton("Eliminar Producto");
+        btnEliminar.addActionListener(e -> eliminarProducto());
+        add(btnEliminar);
 
-        // Panel inferior con el botón
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panelBotones.add(agregarProductoButton);
-
-        // Añadir los componentes al JFrame
-        add(scrollPane, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
-
-        // Mostrar los productos al abrir la ventana
         actualizarListaProductos();
-    }
-
-    private void actualizarListaProductos() {
-        panelProductos.removeAll(); // Limpia el panel antes de actualizar
-        List<Producto> productos = controlInventario.obtenerProductos(); // Obtener productos del inventario
-
-        for (Producto producto : productos) {
-            JPanel productoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel labelProducto = new JLabel(producto.toString());
-            JButton editarButton = new JButton("Editar");
-            JButton eliminarButton = new JButton("Eliminar");
-
-            editarButton.addActionListener(e -> editarProducto(producto));
-            eliminarButton.addActionListener(e -> eliminarProducto(producto));
-
-            productoPanel.add(labelProducto);
-            productoPanel.add(editarButton);
-            productoPanel.add(eliminarButton);
-            panelProductos.add(productoPanel);
-        }
-
-        panelProductos.revalidate(); // Actualiza el panel
-        panelProductos.repaint(); // Redibuja el panel
+        setVisible(true);
     }
 
     private void agregarProducto() {
         String codigo = JOptionPane.showInputDialog(this, "Ingrese el código del producto:");
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return;
+        }
+
         String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre del producto:");
-        String categoria = JOptionPane.showInputDialog(this,"Ingrese la categoria del producto");
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return;
+        }
+
+        String categoriaStr = JOptionPane.showInputDialog(this, "Ingrese el ID de la categoría del producto:");
+        if (categoriaStr == null || categoriaStr.trim().isEmpty()) {
+            return;
+        }
+
         String cantidadStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad del producto:");
         String precioStr = JOptionPane.showInputDialog(this, "Ingrese el precio del producto:");
 
         try {
             int cantidad = Integer.parseInt(cantidadStr);
             double precio = Double.parseDouble(precioStr);
-            controlInventario.registrarProducto(codigo, nombre, cantidad, precio,categoria);
-            JOptionPane.showMessageDialog(this, "Producto agregado exitosamente.");
-            actualizarListaProductos(); // Actualiza la lista después de agregar
+            int idCategoria = Integer.parseInt(categoriaStr);
+
+            if (controlInventario.existeProducto(codigo)) {
+                JOptionPane.showMessageDialog(this, "El código del producto ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            controlInventario.registrarProducto(codigo, nombre, cantidad, precio, idCategoria);
+            actualizarListaProductos();
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Cantidad o precio inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cantidad, precio o categoría inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void editarProducto(Producto producto) {
-        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", producto.getNombre());
-        String nuevaCantidadStr = JOptionPane.showInputDialog(this, "Nueva cantidad:", producto.getCantidad());
-        String nuevoPrecioStr = JOptionPane.showInputDialog(this, "Nuevo precio:", producto.getPrecio());
+    private void eliminarProducto() {
+        String codigo = JOptionPane.showInputDialog(this, "Ingrese el código del producto a eliminar:");
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return;
+        }
 
-        try {
-            int nuevaCantidad = Integer.parseInt(nuevaCantidadStr);
-            double nuevoPrecio = Double.parseDouble(nuevoPrecioStr);
-            producto.setNombre(nuevoNombre);
-            producto.setCantidad(nuevaCantidad);
-            producto.setPrecio(nuevoPrecio);
-            JOptionPane.showMessageDialog(this, "Producto actualizado.");
-            actualizarListaProductos(); // Actualiza la lista después de editar
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Cantidad o precio inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
+        controlInventario.eliminarProducto(codigo);
+        actualizarListaProductos();
+    }
+
+    private void actualizarListaProductos() {
+        modeloLista.clear();
+        List<String> productos = controlInventario.obtenerListaProductos();
+        for (String producto : productos) {
+            modeloLista.addElement(producto);
         }
     }
 
-    private void eliminarProducto(Producto producto) {
-        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este producto?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            controlInventario.eliminarProducto(producto.getCodigo());
-            JOptionPane.showMessageDialog(this, "Producto eliminado.");
-            actualizarListaProductos(); // Actualiza la lista después de eliminar
+    private static class ControlInventario {
+
+        public ControlInventario() {
+
         }
     }
 }

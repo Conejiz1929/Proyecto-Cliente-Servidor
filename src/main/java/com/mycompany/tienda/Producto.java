@@ -66,7 +66,7 @@ public class Producto {
 
     @Override
     public String toString() {
-        return "Producto{" + "codigo=" + codigo + ", nombre=" + nombre + ", cantidad=" + cantidad + ", precio=" + precio + ", categoria=" + categoria + '}';
+        return "Producto:" + "codigo  =" + codigo + ", nombre  =" + nombre + ", cantidad  =" + cantidad + ", precio =" + precio + ", categoria =" + categoria;
     }
 
 }
