@@ -8,12 +8,8 @@ package Interfaz;
  *
  * @author José Sequeira
  */
-import Producto.ControlInventario;
-import Producto.Carrito;
-import Login_Registro.Login;
 import controller.ProductoController;
 import controller.UsuarioController;
-import Login_Registro.GestorUsuarios;
 import javax.swing.*;
 import java.awt.*;
 import modelo.Usuario;
