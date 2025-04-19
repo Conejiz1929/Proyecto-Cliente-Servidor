@@ -25,8 +25,7 @@ public class Login extends JFrame {
     private JPasswordField txtPassword;
     private JComboBox<String> cbRoles;
 
-    public Login(UsuarioController usuarioController) {
-        this.usuarioController = usuarioController;
+    public Login(GestorUsuarios usuarioController) {
         configurarVentana();
         initComponentes();
     }

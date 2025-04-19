@@ -169,4 +169,8 @@ public class UsuarioDAO {
             return false;
         }
     }
+
+    public Usuario buscarPorId(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

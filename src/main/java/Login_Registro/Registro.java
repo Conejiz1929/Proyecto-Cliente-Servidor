@@ -15,6 +15,9 @@ import modelo.Usuario;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Registro extends JFrame {
 
@@ -27,8 +30,7 @@ class Registro extends JFrame {
     private GestorUsuarios gestorUsuarios;
     private JCheckBox esAdministrador;
 
-    public Registro(GestorUsuarios gestorUsuarios) {
-        this.gestorUsuarios = gestorUsuarios;
+    public Registro(UsuarioController gestorUsuarios) {
 
         setTitle("Registro de Usuario");
         setSize(300, 300);
@@ -77,18 +79,27 @@ class Registro extends JFrame {
                 String nombre = nombreField.getText();
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
-                
-                if (nombre.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                String rol = (String) rolField.getSelectedItem(); // Obtener el rol seleccionado del JComboBox
+
+                if (nombre.isEmpty() || email.isEmpty() || password.isEmpty() || rol == null) {
                     JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
                     return;
                 }
 
                 if (esAdministrador.isSelected()) {
                     Administrador nuevoAdmin = new Administrador(id, nombre, email, password, rol); // Crear nuevo administrador
-                    UsuarioDAO.registrarAdministrador(nuevoAdmin);
+                    try {
+                        UsuarioDAO.registrarAdministrador(nuevoAdmin);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Registro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     Usuario nuevoUsuario = new Usuario(id, nombre, email, password, rol); // Crear nuevo usuario
-                    UsuarioDAO.registrarUsuario(nuevoUsuario);
+                    try {
+                        UsuarioDAO.registrarUsuario(nuevoUsuario);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Registro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
                 JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente!");
